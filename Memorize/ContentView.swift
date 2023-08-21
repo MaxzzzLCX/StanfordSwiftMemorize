@@ -8,30 +8,86 @@
 import SwiftUI
 
 struct ContentView: View {
-    let emojis: [String] = ["🙈","🐥","🐶","🐱","🐻","🐧","🍎","🍋","🥐","🍳","🍔","🌮"]
+    @State var emojis: Array<String> =  []
+    let animals = ["🙈","🐥","🐶","🐱","🐻","🐧"]
+    let food = ["🍎","🍋","🥐","🍳","🍔","🌮","🍍","🥘"]
+    let vehicles = ["🚝","🚀","⛵️","🚁","🛴"]
+    
+    @State var themeColor: Color = .green
+    
     @State var cardCount: Int = 4
+    @State var currentTheme: String = "Animals"
+    
     
     var body: some View {
         VStack{
-            ScrollView{
-                cards
-            }
+            title
+            cards
             Spacer()
-            cardCountAdjuster
+            themeSelection
+            // cardCountAdjuster
         }
         .padding()
     }
     
-    var cards: some View{
-        LazyVGrid(columns:[GridItem(.adaptive(minimum: 120))]){
-            ForEach(0..<cardCount, id: \.self){ index in
-                CardView(content: emojis[index])
-                    .aspectRatio(2/3, contentMode: .fit)
-            }
-        }
-        .foregroundColor(.black)
+    var title: some View{
+        Text("Memorize!")
+            .font(.largeTitle)
     }
     
+    
+    var cards: some View{
+        LazyVGrid(columns:[GridItem(),GridItem(),GridItem(),GridItem(),GridItem()]){
+            
+            ForEach(0..<emojis.count, id: \.self){ index in
+                CardView(content: emojis[index])
+                    .aspectRatio(2/3, contentMode: .fit)
+        
+            }
+        }
+        .foregroundColor(themeColor)
+    }
+    
+    
+    
+    var themeSelection: some View{
+        HStack{
+            Spacer()
+            animalTheme
+            Spacer()
+            foodTheme
+            Spacer()
+            vehicleTheme
+            Spacer()
+        }
+    }
+    
+    func themeButtonCreation(caption: String, symbol: String, themeEmojis: [String], color: Color) -> some View{
+        
+        Button(action: {
+            emojis = themeEmojis + themeEmojis
+                .shuffled()
+            themeColor = color
+        }, label: {
+            VStack{
+                Image(systemName: symbol).font(.largeTitle)
+                Text(caption)
+            }
+        })
+    }
+    
+    var animalTheme: some View{
+        themeButtonCreation(caption: "Animals", symbol: "pawprint.fill", themeEmojis: animals, color: .green)
+    }
+    var foodTheme: some View{
+        themeButtonCreation(caption: "Food", symbol: "fork.knife.circle", themeEmojis: food, color: .red)
+    }
+    var vehicleTheme: some View{
+        themeButtonCreation(caption: "Vehicles", symbol: "car.fill", themeEmojis: vehicles, color: .black)
+    }
+    
+    
+    // THE FOLLOWING IS FROM LECTURE. NOT NEEDED FOR ASSIGNMENT
     var cardCountAdjuster: some View{
         HStack{
             cardRemover
@@ -61,12 +117,16 @@ struct ContentView: View {
     var cardAdder: some View{
         cardCountAdjuster(by: 1, symbol:"rectangle.stack.badge.plus.fill")
     }
+    
+    // THE ABOVE IS FROM LECTURE. NOT NEEDED FOR ASSIGNMENT
+    
+    
 }
 
 
 struct CardView: View{
     let content: String
-    @State var isFaceUp: Bool = true
+    @State var isFaceUp: Bool = false
     var body: some View{
         ZStack{
             let base = RoundedRectangle(cornerRadius: 12)
