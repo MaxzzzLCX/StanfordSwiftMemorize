@@ -11,6 +11,8 @@ struct EmojiMemoryGameView: View {
     
     @ObservedObject var viewModel: EmojiMemoryGame = EmojiMemoryGame()//ViewModel points to View
     
+    private let aspectRatio: CGFloat = 2/3
+    
 //    @State var emojis: Array<String> =  []
 //    let animals = ["🙈","🐥","🐶","🐱","🐻","🐧"]
 //    let food = ["🍎","🍋","🥐","🍳","🍔","🌮","🍍","🥘"]
@@ -25,10 +27,10 @@ struct EmojiMemoryGameView: View {
     var body: some View {
         VStack{
             // title
-            ScrollView{
-                cards
-                    .animation(.default, value: viewModel.cards)
-            }
+            
+            cards
+                .animation(.default, value: viewModel.cards)
+            
             Button("Shuffle"){
                 viewModel.shuffle()
             }
@@ -40,26 +42,20 @@ struct EmojiMemoryGameView: View {
         .padding()
     }
     
-//    var title: some View{
-//        Text("Memorize!")
-//            .font(.largeTitle)
-//    }
     
-    
-    var cards: some View{
-        LazyVGrid(columns:[GridItem(.adaptive(minimum: 85),spacing: 0)], spacing: 0){
-            
-            ForEach(viewModel.cards){ card in
-                CardView(card)
-                    .aspectRatio(2/3, contentMode: .fit)
-                    .padding(4)
-                    .onTapGesture {
-                        viewModel.choose(card)
-                    }
-            }
+
+    private var cards: some View{
+
+        AspectVGrid(viewModel.cards, aspectRatio: aspectRatio){ card in
+            CardView(card)
+                .padding(4)
+                .onTapGesture {
+                    viewModel.choose(card)
+                }
         }
-//        .foregroundColor(themeColor)
+        .foregroundColor(Color.orange)
     }
+    
     
     
     
